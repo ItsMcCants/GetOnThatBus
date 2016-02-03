@@ -14,6 +14,8 @@ class BusStop: NSObject {
     let longitude: Double
     let name: String
     let routes: String
+    let interModal: String
+    let address: String
     
     init(dict: NSDictionary) {
     
@@ -22,6 +24,12 @@ class BusStop: NSObject {
         self.longitude = Double(location.objectForKey("longitude") as! String)!
         self.name      = dict.objectForKey("cta_stop_name") as! String
         self.routes    = dict.objectForKey("routes") as! String
+        if let interModalOption = dict.objectForKey("inter_modal") {
+            self.interModal = interModalOption as! String
+        }else{
+            self.interModal = ""
+        }
+        self.address = dict.objectForKey("_address") as! String
 
     }
 }

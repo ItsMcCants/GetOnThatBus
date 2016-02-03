@@ -10,26 +10,24 @@ import UIKit
 
 class DetailsViewController: UIViewController {
 
+    var busStop : BusStop?
+    @IBOutlet weak var titleLabel: UINavigationItem!
+    
+    @IBOutlet weak var addressLabel: UILabel!
+    @IBOutlet weak var routesLabel: UILabel!
+    @IBOutlet weak var interModalLabel: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        self.titleLabel.title = busStop?.name
+        self.addressLabel.text = busStop?.address
+        self.routesLabel.text = busStop?.routes
+        self.interModalLabel.text = busStop?.interModal
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    @IBAction func onBackButtonTapped(sender: UIBarButtonItem) {
+        self.dismissViewControllerAnimated(true, completion: nil)
     }
-    */
-
 }

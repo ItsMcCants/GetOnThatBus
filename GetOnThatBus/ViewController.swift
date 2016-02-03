@@ -9,8 +9,10 @@
 import UIKit
 import MapKit
 
-class ViewController: UIViewController, MKMapViewDelegate {
+class ViewController: UIViewController, MKMapViewDelegate, UITableViewDataSource, UITableViewDelegate {
     @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var segmentedControl: UISegmentedControl!
     
     var json = NSDictionary()
     var busStopsArray = [BusStop]()
@@ -51,10 +53,20 @@ class ViewController: UIViewController, MKMapViewDelegate {
     }
 
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+        let annotation = annotation as! BusStopMKAnnotation
         
         let pin = MKPinAnnotationView(annotation: annotation, reuseIdentifier: nil)
+        
+        switch annotation.busStop?.interModal {
+            case "Metra"?:
+                pin.pinTintColor = UIColor.blueColor()
+            case "Pace"?:
+                pin.pinTintColor = UIColor.blackColor()
+            default:
+                break
+        }
+        
         pin.canShowCallout = true
-        pin.image = UIImage(named: "pin")
         pin.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure)
         
         return pin
@@ -62,6 +74,10 @@ class ViewController: UIViewController, MKMapViewDelegate {
     
     func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         let annotation = view.annotation as? BusStopMKAnnotation
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let destinationVC = storyboard.instantiateViewControllerWithIdentifier("detailVC") as! DetailsViewController
+        destinationVC.busStop = annotation?.busStop
+        self.presentViewController(destinationVC, animated: true, completion: nil)
         
     }
     
@@ -93,6 +109,33 @@ class ViewController: UIViewController, MKMapViewDelegate {
         region = self.mapView.regionThatFits(region)
         
         self.mapView.setRegion(region, animated: true)
+    }
+    
+    @IBAction func onSegmentTapped(sender: UISegmentedControl) {
+        switch sender.selectedSegmentIndex {
+        case 0:
+            self.mapView.hidden = false
+            self.tableView.hidden = true
+        case 1:
+            self.mapView.hidden = true
+            self.tableView.hidden = false
+        default:
+            break
+        }
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return self.busStopsArray.count
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("Cell")!
+        
+        let busStop = self.busStopsArray[indexPath.row]
+        cell.textLabel?.text = busStop.name
+        cell.detailTextLabel?.text = busStop.routes
+        
+        return cell
     }
 }
 
